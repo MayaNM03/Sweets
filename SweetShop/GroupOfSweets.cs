@@ -2,7 +2,7 @@
 {
     public class GroupOfSweets 
     {
-        public int ID_Group;
-        public string Name_Group;
+        public int ID_Group { get; set; }
+        public string Name_Group { get; set; }
     }
 }

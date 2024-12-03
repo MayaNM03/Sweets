@@ -4,11 +4,11 @@ namespace SweetShop
 {
     public class Order 
     {
-        public string ID_Order;
-        public DateTime DateOfDelivery;
-        public string ID_Assort;
-        public bool Addons;
-        public double PrecePerSweet;
-        public int AmountOfSweets;
+        public string ID_Order { get; set; }
+        public DateTime DateOfDelivery { get; set; }
+        public string ID_Assort { get; set; }
+        public bool Addons { get; set; }
+        public double PricePerSweet { get; set; }
+        public int AmountOfSweets { get; set; }
     }
 }

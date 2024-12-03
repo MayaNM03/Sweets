@@ -2,11 +2,11 @@
 {
     public class AssortSweets
     {
-        public string ID_Assort;
-        public string Name_Sweet;
-        public int ID_Group;
-        public string Recipe;
-        public string Weight;
-        public double PricePerSweet;
+        public string ID_Assort { get; set; }
+        public string Name_Sweet { get; set; }
+        public int ID_Group { get; set; }
+        public string Recipe { get; set; }
+        public string Weight { get; set; }
+        public double PricePerSweet { get; set; }
     }
 }

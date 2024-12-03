@@ -119,6 +119,39 @@ namespace SweetShop
                 }
 
             }
+
+            public void DeleteAssort(string idAssortToDelet)
+            {
+                string myDelete = "DELETE FROM AssortSweets WHERE ID_Assort=" + idAssortToDelet;
+                connection.Open();
+                command.CommandText = myDelete;
+                command.Connection = connection;
+                command.ExecuteNonQuery();
+                MessageBox.Show("Record Delete", "Congrats");
+                connection.Close();
+            }
+            
+            public void DeleteGroup(string groupToDelete)
+            {
+                string myDelete = "DELETE FROM Group WHERE Name_Group=" + groupToDelete;
+                connection.Open();
+                command.CommandText = myDelete;
+                command.Connection = connection;
+                command.ExecuteNonQuery();
+                MessageBox.Show("Record Delete", "Congrats");
+                connection.Close();
+            }
+
+            public void DeleteOrder(string idOrderToDelete)
+            {
+                string myDelete = "DELETE FROM Order WHERE ID_Order=" + idOrderToDelete;
+                connection.Open();
+                command.CommandText = myDelete;
+                command.Connection = connection;
+                command.ExecuteNonQuery();
+                MessageBox.Show("Record Delete", "Congrats");
+                connection.Close();
+            }
         }
 
         private void button1_Click(object sender, EventArgs e) //AssortSweets
@@ -295,6 +328,92 @@ namespace SweetShop
 
         }
 
-       
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void chart1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label21_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label25_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            string Assort = textBox17.Text;
+            //TODO: get earnings by assort
+        }
+
+        private void textBox17_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+
+            string nameGroup = textBox16.Text;
+            //TODO: get earnings by groupName
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            string orderId = textBox11.Text;
+            //TODO: get earnings by orderId
+        }
+
+        private void textBox16_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox11_TextChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string assortToDelete = textBox9.Text;
+            
+            b.DeleteAssort(assortToDelete);
+        }
+
+        private void textBox14_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string groupToDelete = textBox14.Text;
+            b.DeleteGroup(groupToDelete);
+        }
+
+        private void textBox15_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            string orderToDelete = textBox15.Text;
+            b.DeleteOrder(orderToDelete);
+        }
     }
 }

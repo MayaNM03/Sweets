@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Data.OleDb;
 using System.Data;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace SweetShop
 {
@@ -152,7 +153,7 @@ namespace SweetShop
             
             public void DeleteGroup(string groupToDelete)
             {
-                string myDelete = "DELETE FROM Group WHERE Name_Group=" + "'" + groupToDelete + "'";
+                string myDelete = "DELETE FROM GroupOfSweets WHERE Name_Group=" + "'" + groupToDelete + "'";
                 connection.Open();
                 command.CommandText = myDelete;
                 command.Connection = connection;
@@ -171,6 +172,33 @@ namespace SweetShop
                 MessageBox.Show("Record Delete", "Congrats");
                 connection.Close();
             }
+
+            public string GetOrder(DateTime dateOfDelivery)
+            {
+                string myGet = "SELECT FROM Order WHERE DateOfDelivery=" + dateOfDelivery;
+                connection.Open();
+                command.CommandText = myGet;
+                command.Connection = connection;
+                var reader = command.ExecuteReader();
+                string result = string.Empty;
+                while (reader.Read())
+                {
+                    while (reader.Read())
+                    {
+                        string ID_Order = reader.GetValue(0).ToString();
+                        string DateOfDelivery = reader.GetString(1);
+                        string ID_Assort = reader.GetString(2);
+                        string Addons = reader.GetString(3);
+                        string PricePerSweet = reader.GetString(4);
+                        string AmountOfSweet = reader.GetString(5);
+                        result += ID_Order + " " + DateOfDelivery + " " + ID_Assort + " " + ID_Assort + " " + Addons + " " + PricePerSweet + " "+ AmountOfSweet + "/n ";
+                    }
+
+                }
+                connection.Close();
+                return result;
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e) //AssortSweets
@@ -433,6 +461,17 @@ namespace SweetShop
         {
             string orderToDelete = textBox15.Text;
             b.DeleteOrder(orderToDelete);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(b.GetOrder(dateTimePicker2.Value));
+            
+        }
+
+        private void label30_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

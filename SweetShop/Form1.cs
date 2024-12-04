@@ -28,7 +28,8 @@ namespace SweetShop
             OleDbCommand command;
             private void ConnectTo()
             {
-                connection = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.4.0; Data Source= C:\\Users\\nvm\\Documents\\Sweets.mdb");
+                connection = new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0; Data Source= C:\\Users\\nvm\\Documents\\Sweets.mdb");
+                //connection = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.4.0; Data Source= *add your path to the database* );
                 command = connection.CreateCommand();
             }
 
@@ -42,9 +43,9 @@ namespace SweetShop
                 try
                 {
                     command.CommandText = "INSERT INTO AssortSweets(ID_Assort, Name_Sweet, ID_Group, Recipe, Weigth, PricePerSweet) VALUES("
-                    + "'" + s.ID_Assort + "'" + ", " + "'" + s.Name_Sweet + "'" + ", " + s.ID_Group + ", " + "'" + s.Recipe + "'"+ ", " + s.Weight + ", " + s.PricePerSweet + ")";
+                    + "'" + s.ID_Assort + "'" + ", " + "'" + s.Name_Sweet + "'" + ", " + s.ID_Group + ", " + "'" + s.Recipe + "'"+ ", " + s.Weight + ", " + s.PricePerSweet + ");";
                     command.CommandType = CommandType.Text;
-                    // command.Connection = connection;
+                    //command.Connection = connection;
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
@@ -68,11 +69,23 @@ namespace SweetShop
             {
                 try
                 {
-                    command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addons, PricePerSweet, AmountOfSweets) VALUES("
-                     + o.ID_Order + ", TO_DATE( " + "'" + o.DateOfDelivery + "'" + ", 'YYYY-MM-DD')" /*Might need to change the date format later*/ + ", " + "'" + o.ID_Assort + "'" 
-                     + ", " + o.Addons /*Needs work; making sure it will be always 0 or 1*/ + ", " + o.PricePerSweet + ", " + o.AmountOfSweets + ")";
+                    //command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addons, PricePerSweet, AmountOfSweets) VALUES("
+                    //  + o.ID_Order + ", TO_DATE( " + "'" + o.DateOfDelivery + "'" + ", 'YYYY-MM-DD')" /*Might need to change the date format later*/ + ", " + "'" + o.ID_Assort + "'" 
+                    // + ", " + o.Addons /*Needs work; making sure it will be always 0 or 1*/ + ", " + o.PricePerSweet + ", " + o.AmountOfSweets + ");"; 
+
+                    command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addons, PricePerSweet, AmountOfSweets) VALUES(@ID_Order, @DateOfDelivery, @ID_Assort, @Addons, @PricePerSweet, @AmountOfSweets);";
+
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@ID_Order", o.ID_Order);
+                    command.Parameters.AddWithValue("@DateOfDelivery", o.DateOfDelivery);
+                    command.Parameters.AddWithValue("@DateOfDelivery", o.DateOfDelivery);
+                    command.Parameters.AddWithValue("@ID_Assort", o.ID_Assort);
+                    command.Parameters.AddWithValue("@Addons", o.Addons);
+                    command.Parameters.AddWithValue("@PricePerSweet", o.PricePerSweet);
+                    command.Parameters.AddWithValue("@AmountOfSweets", o.AmountOfSweets);
+
                     command.CommandType = CommandType.Text;
-                    // command.Connection = connection;
+                    command.Connection = connection;
                     connection.Open();
                     command.ExecuteNonQuery();
 
@@ -97,17 +110,23 @@ namespace SweetShop
             {
                 try
                 {
-                    command.CommandText = "INSERT INTO AssortSweets(ID_Group, Name_Group);VALUES("
-                     + g.ID_Group + ", " + "'" + g.Name_Group + "'" + ")";
+                    //command.CommandText = "INSERT INTO GroupOfSweets(ID_Group, Name_Group); VALUES("
+                    // + g.ID_Group + ", " + "'" + g.Name_Group + "' " + ");";
+                    command.CommandText = "INSERT INTO GroupOfSweets(ID_Group, Name_Group) VALUES( @ID_Group, @Name_Group);";
+
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@ID_Group", g.ID_Group);
+                    command.Parameters.AddWithValue("@Name_Group", g.Name_Group);
+
                     command.CommandType = CommandType.Text;
-                    // command.Connection = connection;
+                    //command.Connection = connection;
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
 
                 catch (Exception)
                 {
-                    MessageBox.Show("Некоректни данни! Моля въведете отново!");
+                    MessageBox.Show("Некоректни данни! Моля въведете отново! ");
                 }
                 finally
                 {
@@ -133,7 +152,7 @@ namespace SweetShop
             
             public void DeleteGroup(string groupToDelete)
             {
-                string myDelete = "DELETE FROM Group WHERE Name_Group=" + groupToDelete;
+                string myDelete = "DELETE FROM Group WHERE Name_Group=" + "'" + groupToDelete + "'";
                 connection.Open();
                 command.CommandText = myDelete;
                 command.Connection = connection;

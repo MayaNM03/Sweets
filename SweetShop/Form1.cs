@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.OleDb;
-using System.Data;
 using System.Windows.Forms;
 using System.Data.SqlClient;
 
@@ -43,17 +42,34 @@ namespace SweetShop
             {
                 try
                 {
-                    command.CommandText = "INSERT INTO AssortSweets(ID_Assort, Name_Sweet, ID_Group, Recipe, Weigth, PricePerSweet) VALUES("
-                    + "'" + s.ID_Assort + "'" + ", " + "'" + s.Name_Sweet + "'" + ", " + s.ID_Group + ", " + "'" + s.Recipe + "'"+ ", " + s.Weight + ", " + s.PricePerSweet + ");";
+                   // command.CommandText = "INSERT INTO AssortSweets(ID_Assort, Name_Sweet, ID_Group, Recipe, Weight, PricePerSwet) VALUES("
+                    // + "'" + s.ID_Assort + "'" + ", " + "'" + s.Name_Sweet + "'" + ", " + s.ID_Group + ", " + "'" + s.Recipe + "'"+ ", " + s.Weight + ", " + s.PricePerSweet + ");";
+
+                    command.CommandText = "INSERT INTO AssortSweets(ID_Assort, Name_Sweet, ID_Group, Recipe, Weight, PricePerSwet) " +
+                        "VALUES(@ID_Assort, @Name_Sweet, @ID_Group, @Recipe, @Weight, @PricePerSwet );";
+
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@ID_Assort", s.ID_Assort);
+                    command.Parameters.AddWithValue("@Name_Sweet", s.Name_Sweet);
+                    command.Parameters.AddWithValue("@ID_Group", s.ID_Group);
+                    command.Parameters.AddWithValue("@Recipe", s.Recipe);
+                    command.Parameters.AddWithValue("@Weight", s.Weight);
+                    command.Parameters.AddWithValue("@PricePerSwet", s.PricePerSwet);
+
+
                     command.CommandType = CommandType.Text;
-                    //command.Connection = connection;
+                    command.Connection = connection;
                     connection.Open();
                     command.ExecuteNonQuery();
+
+                    MessageBox.Show("Row " + s.Name_Sweet + " added to the table");
+
                 }
+
 
                 catch (Exception)
                 {
-                    MessageBox.Show("Некоректни данни! Моля въведете отново!");
+                    MessageBox.Show("Некоректни данни! Моля въведете отново! ");
                 }
                 finally
                 {
@@ -74,14 +90,14 @@ namespace SweetShop
                     //  + o.ID_Order + ", TO_DATE( " + "'" + o.DateOfDelivery + "'" + ", 'YYYY-MM-DD')" /*Might need to change the date format later*/ + ", " + "'" + o.ID_Assort + "'" 
                     // + ", " + o.Addons /*Needs work; making sure it will be always 0 or 1*/ + ", " + o.PricePerSweet + ", " + o.AmountOfSweets + ");"; 
 
-                    command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addons, PricePerSweet, AmountOfSweets) VALUES(@ID_Order, @DateOfDelivery, @ID_Assort, @Addons, @PricePerSweet, @AmountOfSweets);";
+                    command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addon, PricePerSweet, AmountOfSweets) " +
+                    "VALUES(@ID_Order, @DateOfDelivery, @ID_Assort, @Addon, @PricePerSweet, @AmountOfSweets);";
 
-                    command.Parameters.Clear();
+                   // command.Parameters.Clear();
                     command.Parameters.AddWithValue("@ID_Order", o.ID_Order);
                     command.Parameters.AddWithValue("@DateOfDelivery", o.DateOfDelivery);
-                    command.Parameters.AddWithValue("@DateOfDelivery", o.DateOfDelivery);
                     command.Parameters.AddWithValue("@ID_Assort", o.ID_Assort);
-                    command.Parameters.AddWithValue("@Addons", o.Addons);
+                    command.Parameters.AddWithValue("@Addon", o.Addon);
                     command.Parameters.AddWithValue("@PricePerSweet", o.PricePerSweet);
                     command.Parameters.AddWithValue("@AmountOfSweets", o.AmountOfSweets);
 
@@ -90,11 +106,13 @@ namespace SweetShop
                     connection.Open();
                     command.ExecuteNonQuery();
 
+                    MessageBox.Show("Row " + o.ID_Order + " added to the table");
+
                 }
 
                 catch (Exception)
                 {
-                    MessageBox.Show("Некоректни данни! Моля въведете отново!");
+                    MessageBox.Show("Некоректни данни! Моля въведете отново!" + o.Addon + " , " + o.DateOfDelivery);
                 }
                 finally
                 {
@@ -120,9 +138,12 @@ namespace SweetShop
                     command.Parameters.AddWithValue("@Name_Group", g.Name_Group);
 
                     command.CommandType = CommandType.Text;
-                    //command.Connection = connection;
+                    command.Connection = connection;
                     connection.Open();
                     command.ExecuteNonQuery();
+
+                    MessageBox.Show("Row " + g.Name_Group + " added to the table");
+
                 }
 
                 catch (Exception)
@@ -140,9 +161,9 @@ namespace SweetShop
 
             }
 
-            public void DeleteAssort(string idAssortToDelet)
+            public void DeleteAssort(string idAssortToDelet) 
             {
-                string myDelete = "DELETE FROM AssortSweets WHERE ID_Assort=" + idAssortToDelet;
+                string myDelete = "DELETE FROM AssortSweets WHERE ID_Assort=" +"'" + idAssortToDelet + "'";
                 connection.Open();
                 command.CommandText = myDelete;
                 command.Connection = connection;
@@ -162,7 +183,7 @@ namespace SweetShop
                 connection.Close();
             }
 
-            public void DeleteOrder(string idOrderToDelete)
+            public void DeleteOrder(string idOrderToDelete) 
             {
                 string myDelete = "DELETE FROM Order WHERE ID_Order=" + idOrderToDelete;
                 connection.Open();
@@ -208,9 +229,9 @@ namespace SweetShop
             s.Name_Sweet = textBox2.Text;
             s.ID_Group = int.Parse(textBox3.Text);
             s.Recipe = textBox4.Text;
-            s.Weight = textBox5.Text;
+            s.Weight = double.Parse(textBox5.Text);
             s.Name_Sweet = textBox2.Text;
-            s.PricePerSweet = double.Parse(textBox3.Text);
+            s.PricePerSwet = double.Parse(textBox6.Text);
             b.Insert(s);
 
         }
@@ -220,8 +241,17 @@ namespace SweetShop
             Order o = new Order();
             o.ID_Order = textBox12.Text;
             o.DateOfDelivery= DateTime.Parse(dateTimePicker1.Text);
-            o.ID_Order = textBox10.Text;
-            o.Addons =  checkBox1.Checked;
+            o.ID_Assort = textBox10.Text;
+            o.AddonConv =  checkBox1.Checked;
+            if (o.AddonConv == true)
+            {
+                o.Addon = 1;
+            }
+
+            else if (o.AddonConv == false)
+            {
+                o.Addon = 0;
+            }
             o.PricePerSweet = double.Parse(textBox8.Text);
             o.AmountOfSweets = int.Parse(textBox7.Text);
             b.Insert(o);
@@ -234,6 +264,50 @@ namespace SweetShop
             g.ID_Group = int.Parse(textBox18.Text);
             g.Name_Group = textBox13.Text;
             b.Insert(g);
+
+        }
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            string Assort = textBox17.Text;
+            //TODO: get earnings by assort
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+
+            string nameGroup = textBox16.Text;
+            //TODO: get earnings by groupName
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            string orderId = textBox11.Text;
+            //TODO: get earnings by orderId
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            string idAssortToDelet = textBox9.Text;
+
+            b.DeleteAssort(idAssortToDelet);
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string groupToDelete = textBox14.Text;
+            b.DeleteGroup(groupToDelete);
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            string idorderToDelete = textBox15.Text;
+            b.DeleteOrder(idorderToDelete);
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(b.GetOrder(dateTimePicker2.Value));
 
         }
 
@@ -400,29 +474,14 @@ namespace SweetShop
 
         }
 
-        private void button10_Click(object sender, EventArgs e)
-        {
-            string Assort = textBox17.Text;
-            //TODO: get earnings by assort
-        }
+        
 
         private void textBox17_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void button11_Click(object sender, EventArgs e)
-        {
-
-            string nameGroup = textBox16.Text;
-            //TODO: get earnings by groupName
-        }
-
-        private void button12_Click(object sender, EventArgs e)
-        {
-            string orderId = textBox11.Text;
-            //TODO: get earnings by orderId
-        }
+        
 
         private void textBox16_TextChanged(object sender, EventArgs e)
         {
@@ -434,39 +493,16 @@ namespace SweetShop
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-            string assortToDelete = textBox9.Text;
-            
-            b.DeleteAssort(assortToDelete);
-        }
-
         private void textBox14_TextChanged(object sender, EventArgs e)
         {
 
         }
 
-        private void button5_Click(object sender, EventArgs e)
-        {
-            string groupToDelete = textBox14.Text;
-            b.DeleteGroup(groupToDelete);
-        }
+        
 
         private void textBox15_TextChanged(object sender, EventArgs e)
         {
 
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            string orderToDelete = textBox15.Text;
-            b.DeleteOrder(orderToDelete);
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show(b.GetOrder(dateTimePicker2.Value));
-            
         }
 
         private void label30_Click(object sender, EventArgs e)

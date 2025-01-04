@@ -161,6 +161,115 @@ namespace SweetShop
 
             }
 
+            public void UpdateAssortSweets(string idAssort, string nameSweet, int idGroup, string recipe, double weight, double pricePerSweet)
+            {
+                string query = @"
+                UPDATE AssortSweets
+                SET Name_Sweet = @Name_Sweet, 
+                    ID_Group = @ID_Group, 
+                    Recipe = @Recipe, 
+                    Weight = @Weight, 
+                    PricePerSwet = @PricePerSweet
+                WHERE ID_Assort = @ID_Assort";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Name_Sweet", nameSweet);
+                    command.Parameters.AddWithValue("@ID_Group", idGroup);
+                    command.Parameters.AddWithValue("@Recipe", recipe);
+                    command.Parameters.AddWithValue("@Weight", weight);
+                    command.Parameters.AddWithValue("@PricePerSweet", pricePerSweet);
+                    command.Parameters.AddWithValue("@ID_Assort", idAssort);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    MessageBox.Show(rowsAffected > 0 ? "AssortSweets updated successfully." : "No records updated.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating AssortSweets: " + ex.Message);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            public void UpdateGroupOfSweets(int idGroup, string nameGroup)
+            {
+                string query = @"
+                UPDATE GroupOfSweets
+                SET Name_Group = @Name_Group
+                WHERE ID_Group = @ID_Group";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@Name_Group", nameGroup);
+                    command.Parameters.AddWithValue("@ID_Group", idGroup);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    MessageBox.Show(rowsAffected > 0 ? "GroupOfSweets updated successfully." : "No records updated.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating GroupOfSweets: " + ex.Message);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            public void UpdateOrder(string idOrder, DateTime dateOfDelivery, string idAssort, int addon, double pricePerSweet, int amountOfSweets)
+            {
+                string query = @"
+                UPDATE [Order]
+                SET DateOfDelivery = @DateOfDelivery, 
+                    ID_Assort = @ID_Assort, 
+                    Addon = @Addon, 
+                    PricePerSweet = @PricePerSweet, 
+                    AmountOfSweets = @AmountOfSweets
+                WHERE ID_Order = @ID_Order";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@DateOfDelivery", dateOfDelivery);
+                    command.Parameters.AddWithValue("@ID_Assort", idAssort);
+                    command.Parameters.AddWithValue("@Addon", addon);
+                    command.Parameters.AddWithValue("@PricePerSweet", pricePerSweet);
+                    command.Parameters.AddWithValue("@AmountOfSweets", amountOfSweets);
+                    command.Parameters.AddWithValue("@ID_Order", idOrder);
+
+                    int rowsAffected = command.ExecuteNonQuery();
+                    MessageBox.Show(rowsAffected > 0 ? "Order updated successfully." : "No records updated.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error updating Order: " + ex.Message);
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
             public void DeleteAssort(string idAssortToDelet) 
             {
                 string myDelete = "DELETE FROM AssortSweets WHERE ID_Assort=" +"'" + idAssortToDelet + "'";
@@ -220,6 +329,98 @@ namespace SweetShop
                 return result;
             }
 
+            public string GetEarningsByAssort(string idAssort)
+            {
+                string query = @"
+                SELECT SUM(PricePerSweet * AmountOfSweets) AS TotalEarnings
+                FROM [Order]
+                WHERE ID_Assort = @ID_Assort";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@ID_Assort", idAssort);
+
+                    var result = command.ExecuteScalar();
+                    return result != null ? $"Total earnings for Assort ID {idAssort}: {result} BGN" : "No data found.";
+                }
+                catch (Exception ex)
+                {
+                    return "Error calculating earnings: " + ex.Message;
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            public string GetEarningsByGroup(string groupName)
+            {
+                string query = @"
+                SELECT SUM(o.PricePerSweet * o.AmountOfSweets) AS TotalEarnings
+                FROM [Order] o
+                INNER JOIN AssortSweets a ON o.ID_Assort = a.ID_Assort
+                INNER JOIN GroupOfSweets g ON a.ID_Group = g.ID_Group
+                WHERE g.Name_Group = @GroupName";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@GroupName", groupName);
+
+                    var result = command.ExecuteScalar();
+                    return result != null ? $"Total earnings for Group {groupName}: {result} BGN" : "No data found.";
+                }
+                catch (Exception ex)
+                {
+                    return "Error calculating earnings: " + ex.Message;
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
+            public string GetEarningsByOrder(string orderId)
+            {
+                string query = @"
+                SELECT SUM(PricePerSweet * AmountOfSweets) AS TotalEarnings
+                FROM [Order]
+                WHERE ID_Order = @OrderID";
+
+                try
+                {
+                    connection.Open();
+                    command.CommandText = query;
+                    command.Parameters.Clear();
+                    command.Parameters.AddWithValue("@OrderID", orderId);
+
+                    var result = command.ExecuteScalar();
+                    return result != null ? $"Total earnings for Order ID {orderId}: {result} BGN" : "No data found.";
+                }
+                catch (Exception ex)
+                {
+                    return "Error calculating earnings: " + ex.Message;
+                }
+                finally
+                {
+                    if (connection != null)
+                    {
+                        connection.Close();
+                    }
+                }
+            }
+
         }
 
         private void button1_Click(object sender, EventArgs e) //AssortSweets
@@ -269,21 +470,42 @@ namespace SweetShop
 
         private void button10_Click(object sender, EventArgs e)
         {
-            string Assort = textBox17.Text;
-            //TODO: get earnings by assort
+            string idAssort = textBox17.Text;
+            if (!string.IsNullOrEmpty(idAssort))
+            {
+                MessageBox.Show(b.GetEarningsByAssort(idAssort));
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid Assort ID.");
+            }
         }
 
         private void button11_Click(object sender, EventArgs e)
         {
 
-            string nameGroup = textBox16.Text;
-            //TODO: get earnings by groupName
+            string groupName = textBox16.Text;
+            if (!string.IsNullOrEmpty(groupName))
+            {
+                MessageBox.Show(b.GetEarningsByGroup(groupName));
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid Group Name.");
+            }
         }
 
         private void button12_Click(object sender, EventArgs e)
         {
             string orderId = textBox11.Text;
-            //TODO: get earnings by orderId
+            if (!string.IsNullOrEmpty(orderId))
+            {
+                MessageBox.Show(b.GetEarningsByOrder(orderId));
+            }
+            else
+            {
+                MessageBox.Show("Please enter a valid Order ID.");
+            }
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -309,6 +531,38 @@ namespace SweetShop
         {
             MessageBox.Show(b.GetOrder(dateTimePicker2.Value));
 
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            string idAssort = textBox1.Text;
+            string nameSweet = textBox2.Text;
+            int idGroup = int.Parse(textBox3.Text);
+            string recipe = textBox4.Text;
+            double weight = double.Parse(textBox5.Text);
+            double pricePerSweet = double.Parse(textBox6.Text);
+
+            b.UpdateAssortSweets(idAssort, nameSweet, idGroup, recipe, weight, pricePerSweet);
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            int idGroup = int.Parse(textBox18.Text);
+            string nameGroup = textBox13.Text;
+
+            b.UpdateGroupOfSweets(idGroup, nameGroup);
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            string idOrder = textBox12.Text;
+            DateTime dateOfDelivery = DateTime.Parse(dateTimePicker1.Text);
+            string idAssort = textBox10.Text;
+            int addon = checkBox1.Checked ? 1 : 0;
+            double pricePerSweet = double.Parse(textBox8.Text);
+            int amountOfSweets = int.Parse(textBox7.Text);
+
+            b.UpdateOrder(idOrder, dateOfDelivery, idAssort, addon, pricePerSweet, amountOfSweets);
         }
 
         private void textBox7_TextChanged(object sender, EventArgs e)
@@ -509,5 +763,7 @@ namespace SweetShop
         {
 
         }
+
+       
     }
 }

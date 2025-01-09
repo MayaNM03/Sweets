@@ -91,7 +91,7 @@ namespace SweetShop
                     // + ", " + o.Addons /*Needs work; making sure it will be always 0 or 1*/ + ", " + o.PricePerSweet + ", " + o.AmountOfSweets + ");"; 
 
                     command.CommandText = "INSERT INTO Order(ID_Order, DateOfDelivery, ID_Assort, Addon, PricePerSweet, AmountOfSweets) " +
-                    "VALUES(@ID_Order, @DateOfDelivery, @ID_Assort, @Addon, @PricePerSweet, @AmountOfSweets);";
+                    "VALUES(@ID_Order, @DateOfDelivery , @ID_Assort, @Addon, @PricePerSweet, @AmountOfSweets);";
 
                    // command.Parameters.Clear();
                     command.Parameters.AddWithValue("@ID_Order", o.ID_Order);
@@ -363,9 +363,9 @@ namespace SweetShop
             {
                 string query = @"
                 SELECT SUM(o.PricePerSweet * o.AmountOfSweets) AS TotalEarnings
-                FROM [Order] o
-                INNER JOIN AssortSweets a ON o.ID_Assort = a.ID_Assort
-                INNER JOIN GroupOfSweets g ON a.ID_Group = g.ID_Group
+                FROM (([Order] o
+                INNER JOIN AssortSweets a ON o.ID_Assort = a.ID_Assort)
+                INNER JOIN GroupOfSweets g ON a.ID_Group = g.ID_Group)
                 WHERE g.Name_Group = @GroupName";
 
                 try
@@ -441,7 +441,7 @@ namespace SweetShop
         {
             Order o = new Order();
             o.ID_Order = textBox12.Text;
-            o.DateOfDelivery= DateTime.Parse(dateTimePicker1.Text);
+            o.DateOfDelivery = dateTimePicker1.Text; 
             o.ID_Assort = textBox10.Text;
             o.AddonConv =  checkBox1.Checked;
             if (o.AddonConv == true)
@@ -529,8 +529,7 @@ namespace SweetShop
 
         private void button7_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(b.GetOrder(dateTimePicker2.Value));
-
+            MessageBox.Show(b.GetOrder(dateTimePicker2.Value)); 
         }
 
         private void button16_Click(object sender, EventArgs e)
@@ -764,6 +763,9 @@ namespace SweetShop
 
         }
 
-       
+        private void textBox19_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }
